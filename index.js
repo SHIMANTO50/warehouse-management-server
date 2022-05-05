@@ -16,6 +16,7 @@ async function run() {
     try {
         await client.connect();
         const itemsCollection = client.db('warehouse').collection('items');
+        const myitemsCollection = client.db('warehouse').collection('myitems');
 
         app.get('/item', async (req, res) => {
             const query = {};
@@ -47,7 +48,7 @@ async function run() {
             res.send(result);
         })
 
-        //decrease item
+        //update item
         app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
             const updateQuantity = req.body;
@@ -60,6 +61,23 @@ async function run() {
             };
             const result = await itemsCollection.updateOne(filter, updateDoc, options);
             res.send(result);
+        })
+
+        //add myitem
+        app.post('/myitem', async (req, res) => {
+            const newMyProduct = req.body;
+            console.log('adding new Product', newMyProduct);
+            const result = await myitemsCollection.insertOne(newMyProduct);
+            res.send(result);
+
+        });
+
+        app.get('/myitem', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = myitemsCollection.find(query);
+            const item = await cursor.toArray();
+            res.send(item);
         })
     }
     finally {
