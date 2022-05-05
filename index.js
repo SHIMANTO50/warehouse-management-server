@@ -46,6 +46,21 @@ async function run() {
             const result = await itemsCollection.deleteOne(query);
             res.send(result);
         })
+
+        //decrease item
+        app.put('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateQuantity = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: updateQuantity.quantity,
+                },
+            };
+            const result = await itemsCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
     }
     finally {
 
